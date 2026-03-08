@@ -1,7 +1,7 @@
 services:
   gateway:
     build:
-      context: ./gateway
+      context: ../gateway
     container_name: icarus-gateway
     ports:
       - "8081:8080"
@@ -15,7 +15,7 @@ services:
 
   auth-service:
     build:
-      context: ./services/auth-service
+      context: ../services/auth-service
     container_name: icarus-auth
     environment:
       PORT: 4001
@@ -26,7 +26,7 @@ services:
 
   matches-service:
     build:
-      context: ./services/matches-service
+      context: ../services/matches-service
     container_name: icarus-matches
     environment:
       PORT: 4002
@@ -36,7 +36,7 @@ services:
 
   rooms-service:
     build:
-      context: ./services/rooms-service
+      context: ../services/rooms-service
     container_name: icarus-rooms
     environment:
       PORT: 4003
@@ -46,7 +46,7 @@ services:
 
   analytics-service:
     build:
-      context: ./services/analytics-service
+      context: ../services/analytics-service
     container_name: icarus-analytics
     environment:
       PORT: 4004
