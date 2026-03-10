@@ -49,7 +49,7 @@ app.get("/", async (req, res) => {
 app.get("/:id", async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT * FROM match_view WHERE match_id = 1`,
+      "SELECT * FROM match_view WHERE match_id = $1",
       [req.params.id]
     );
 
