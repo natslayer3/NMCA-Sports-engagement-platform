@@ -1,11 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import type { MatchCardModel } from "../../types";
 
-function MatchCard({ match }) {
+interface MatchCardProps {
+  match: MatchCardModel;
+}
+
+function MatchCard({ match }: MatchCardProps) {
   const navigate = useNavigate();
   const isLive = match.status === "LIVE";
   const isFinished = match.status === "FINISHED";
 
-  function openMatch() {
+  function openMatch(): void {
     navigate(`/matches/${match.id}`);
   }
 
@@ -27,37 +32,37 @@ function MatchCard({ match }) {
 
   return (
     <div className="match-card" onClick={openMatch}>
-        <div style={{ ...styles.card, borderTop: `4px solid ${topBorder}` }}>
-            <div style={styles.cardHeader}>
-                <span style={{ ...styles.badge, backgroundColor: badgeColor }}>
-                {match.status}
-                </span>
-                <span style={styles.date}>{match.date}</span>
-            </div>
-
-            <div style={styles.section}>
-                <p style={styles.label}>OPPONENT</p>
-                <div style={styles.opponentRow}>
-                <h3 style={styles.opponent}>{match.opponent}</h3>
-                <div style={styles.vsCircle}>VS</div>
-                </div>
-            </div>
-
-            <div style={styles.section}>
-                <p style={styles.label}>{match.resultLabel}</p>
-                <p style={{ ...styles.result, color: resultColor }}>{match.resultValue}</p>
-            </div>
-
-            <div style={styles.footer}>
-                <span>{match.venue}</span>
-                <span>{">"}</span>
-            </div>
+      <div style={{ ...styles.card, borderTop: `4px solid ${topBorder}` }}>
+        <div style={styles.cardHeader}>
+          <span style={{ ...styles.badge, backgroundColor: badgeColor }}>
+            {match.status}
+          </span>
+          <span style={styles.date}>{match.date}</span>
         </div>
+
+        <div style={styles.section}>
+          <p style={styles.label}>OPPONENT</p>
+          <div style={styles.opponentRow}>
+            <h3 style={styles.opponent}>{match.opponent}</h3>
+            <div style={styles.vsCircle}>VS</div>
+          </div>
+        </div>
+
+        <div style={styles.section}>
+          <p style={styles.label}>{match.resultLabel}</p>
+          <p style={{ ...styles.result, color: resultColor }}>{match.resultValue}</p>
+        </div>
+
+        <div style={styles.footer}>
+          <span>{match.venue}</span>
+          <span>{">"}</span>
+        </div>
+      </div>
     </div>
   );
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   card: {
     backgroundColor: "#ffffff",
     borderRadius: "18px",

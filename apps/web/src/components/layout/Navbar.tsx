@@ -1,28 +1,4 @@
-function Navbar() {
-  return (
-    <nav style={styles.navbar}>
-      <div style={styles.leftSection}>
-        <div style={styles.logoCircle}>TC</div>
-        <h2 style={styles.brand}>TITANS CREW</h2>
-
-        <div style={styles.links}>
-          <span>Home</span>
-          <span style={styles.activeLink}>Matches</span>
-          <span>Team</span>
-          <span>Community</span>
-          <span>History</span>
-          <span>Store</span>
-          <span>News</span>
-          <span>Off-Season</span>
-        </div>
-      </div>
-
-      <button style={styles.loginButton}>Login / Sign Up</button>
-    </nav>
-  );
-}
-
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   navbar: {
     backgroundColor: "#ffffff",
     border: "1px solid #e5e7eb",
@@ -76,5 +52,29 @@ const styles = {
     fontSize: "15px",
   },
 };
+
+function Navbar() {
+  return (
+    <nav style={styles.navbar}>
+      <div style={styles.leftSection}>
+        <div style={styles.logoCircle}>TC</div>
+        <h2 style={styles.brand}>TITANS CREW</h2>
+
+        <div style={styles.links}>
+          <span>Home</span>
+          <span style={styles.activeLink}>Matches</span>
+          <span>Team</span>
+          <span>Community</span>
+          <span>History</span>
+          <span>Store</span>
+          <span>News</span>
+          <span>Off-Season</span>
+        </div>
+      </div>
+
+      <button style={styles.loginButton}>Login / Sign Up</button>
+    </nav>
+  );
+}
 
 export default Navbar;

@@ -1,21 +1,18 @@
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
+import type { ChatMessage } from "../../types";
 
 function FanChat() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     { user: "TitanFan_2026", text: "Let's go Titans!" },
     { user: "Nashville_Mike", text: "Defense looking strong!" },
   ]);
 
   const [input, setInput] = useState("");
 
-  function sendMessage() {
+  function sendMessage(): void {
     if (!input.trim()) return;
 
-    setMessages([
-      ...messages,
-      { user: "You", text: input }
-    ]);
-
+    setMessages([...messages, { user: "You", text: input }]);
     setInput("");
   }
 
@@ -34,7 +31,7 @@ function FanChat() {
       <div className="chat-input">
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
           placeholder="Say something..."
         />
 

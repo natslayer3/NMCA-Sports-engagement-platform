@@ -4,7 +4,7 @@ import "../styles/matchroom.css";
 import { useParams } from "react-router-dom";
 
 function MatchRoomPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   return (
     <div className="match-room">
