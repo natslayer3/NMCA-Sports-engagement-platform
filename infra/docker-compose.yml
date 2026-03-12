@@ -61,6 +61,7 @@ services:
     container_name: icarus-store
     environment:
       PORT: 4005
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
     networks:
       - supabase_net
 
