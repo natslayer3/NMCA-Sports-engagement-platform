@@ -54,7 +54,7 @@ app.post("/create_checkout", async (req, res) => {
        }
     ],
       success_url: `${process.env.FRONTEND_URL}/paySuccess`,
-      cancel_url: `${process.env.FRONTEND_URL}/store`,
+      cancel_url: `${process.env.FRONTEND_URL}`,
     })
 
     // We send back the client_secret, not a URL
