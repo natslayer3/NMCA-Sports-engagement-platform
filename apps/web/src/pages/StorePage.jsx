@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getProducts, createCheckout } from '../services/storeService';
 import { useNavigate } from 'react-router-dom';
 
-export default async function HandleOnClick(default_price, quantity){
+async function HandleOnClick(default_price, quantity){
   try {
     const data = await createCheckout(default_price, Number(quantity));
     window.location.href = data.url;
