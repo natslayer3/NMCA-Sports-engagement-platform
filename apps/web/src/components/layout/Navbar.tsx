@@ -1,3 +1,5 @@
+import { Link, useLocation } from "react-router-dom";
+
 const styles: Record<string, React.CSSProperties> = {
   navbar: {
     backgroundColor: "#ffffff",
@@ -41,6 +43,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   activeLink: {
     fontWeight: "bold",
+    color: "#0B2A55",
+  },
+  normalLink: {
+    color: "#374151",
+    textDecoration: "none",
   },
   loginButton: {
     backgroundColor: "#0B2A55",
@@ -54,6 +61,11 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 function Navbar() {
+  const location = useLocation();
+
+  const isMatches = location.pathname === "/" || location.pathname.startsWith("/matches");
+  const isOffSeason = location.pathname.startsWith("/offseason");
+
   return (
     <nav style={styles.navbar}>
       <div style={styles.leftSection}>
@@ -62,13 +74,17 @@ function Navbar() {
 
         <div style={styles.links}>
           <span>Home</span>
-          <span style={styles.activeLink}>Matches</span>
+          <Link to="/matches" style={isMatches ? styles.activeLink : styles.normalLink}>
+            Matches
+          </Link>
           <span>Team</span>
           <span>Community</span>
           <span>History</span>
           <span>Store</span>
           <span>News</span>
-          <span>Off-Season</span>
+          <Link to="/offseason" style={isOffSeason ? styles.activeLink : styles.normalLink}>
+            Off-Season
+          </Link>
         </div>
       </div>
 
