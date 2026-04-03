@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Auth } from "../../providers/AuthProvider"
+import { Auth } from "../../context/AuthContext"
 
 export const SigninWithGoogle = () => {
     const { SignInWithGoogle } = Auth();

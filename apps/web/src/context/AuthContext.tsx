@@ -7,6 +7,7 @@ interface AuthContextType {
     session: Session | null;
     signUpNewUser: (email: string, password: string) => Promise<any>;
     SignInUser: (email: string, password: string) => Promise<any>;
+    SignInWithGoogle: () => Promise<any>;
     SignOut: () => Promise<any>;
 }
 
@@ -73,14 +74,45 @@ export const AuthContextProvider = ( {children} : AuthContextProps ) => {
             console.error("An error ocurred while siging in ", error);
         }
     }
+
+    const SignInWithGoogle = async () => {
+        const {data, error} = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                }
+            } 
+        });
+
+        if (error){
+            console.error("Error with google sign in provider ", error);
+            return {
+                success: false, 
+                error: error.message
+            };
+        };
+
+        console.log("Successful sign in with google");
+        return {
+            success: true,
+            data
+        }
+    }
+
     useEffect(() => {
         supabase.auth.getSession().then(({ data: {session}}) => {
             setSession(session);
         });
 
-        supabase.auth.onAuthStateChange((_event, session) => {
+        const {data: {subscription}} = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
         });
+
+        return () => {
+            subscription.unsubscribe();
+        }
     }, []);
 
     // SIgn out
@@ -95,7 +127,7 @@ export const AuthContextProvider = ( {children} : AuthContextProps ) => {
 
     return (
         <AuthContext.Provider
-            value={{session, signUpNewUser, SignInUser, SignOut}}
+            value={{session, signUpNewUser, SignInUser, SignInWithGoogle, SignOut}}
         >
             {children}
         </AuthContext.Provider>

@@ -3,7 +3,7 @@ import { Auth } from "../../context/AuthContext"
 import { useNavigate } from "react-router-dom";
 
 export const SignOutButton = () => {
-    const { session, SignOut } = Auth();
+    const { SignOut } = Auth();
     const navigate = useNavigate();
 
     const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {

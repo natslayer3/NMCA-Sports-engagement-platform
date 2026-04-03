@@ -1,4 +1,3 @@
-import React from 'react'
 import { WrapperProps } from '../../types/shared'
 import { Auth } from '../../context/AuthContext'
 import { Navigate } from 'react-router-dom';

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Auth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
-export const Signin = () => {
+export const SigninWithEmail = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -38,6 +38,7 @@ export const Signin = () => {
                 <p>
                     Don't have an account yet? <Link to="/signup">Sign up</Link>
                 </p>
+                <p> Have a google account? </p>
                 <div className="flex flex-col py-4">
                     <input
                         onChange={(e) => setEmail(e.target.value)}
