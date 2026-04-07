@@ -12,6 +12,8 @@
   "dependencies": {
     "@11labs/react": "^0.2.0",
     "@elevenlabs/client": "^0.15.1",
+    "@heroui/react": "^3.0.2",
+    "@heroui/styles": "^3.0.2",
     "@supabase/supabase-js": "^2.100.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
