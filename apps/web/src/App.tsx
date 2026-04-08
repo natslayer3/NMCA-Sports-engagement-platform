@@ -5,6 +5,7 @@ import StorePage from "./pages/StorePage";
 import PaySuccess from "./pages/paySuccess";
 import OffSeasonPage from "./pages/OffSeasonPage";
 import TeamPage from "./pages/TeamPage";
+import HistoryPage from "./pages/HistoryPage";
 import VoiceAgent from "./components/VoiceAgent/VoiceAgent";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Route path="/matches" element={<MatchesPage />} />
       <Route path="/matches/:id" element={<MatchRoomPage />} />
       <Route path="/team" element={<TeamPage />} />
+      <Route path="/history" element={<HistoryPage />} />
       <Route path="/store" element={<StorePage />} />
       <Route path="/paySuccess" element={<PaySuccess />} />
       <Route path="/offseason" element={<OffSeasonPage />} />
