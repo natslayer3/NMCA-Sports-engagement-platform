@@ -380,16 +380,107 @@
   min-height: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
   background: #f5f8fb;
   border: 1px solid #d8dee5;
   border-radius: 14px;
   padding: 24px;
   color: #0b2a55;
-  font-size: 22px;
-  font-weight: 700;
   min-height: 360px;
+}
+
+.wordle-leaderboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wordle-leaderboard-kicker {
+  margin: 0;
+  color: #0f3d78;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.wordle-leaderboard-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.wordle-leaderboard-copy {
+  margin: 0;
+  color: #49617f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.wordle-leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wordle-leaderboard-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #d6deea;
+  box-shadow: 0 10px 24px rgba(15, 61, 120, 0.08);
+}
+
+.wordle-leaderboard-rank {
+  min-width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0f3d78, #2b6cb0);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.wordle-leaderboard-player {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.wordle-leaderboard-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.wordle-leaderboard-meta {
+  margin: 0;
+  color: #58718d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wordle-leaderboard-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.wordle-leaderboard-stat-label {
+  color: #58718d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
 }
 
 @media (max-width: 900px) {
@@ -426,5 +517,15 @@
 
   .wordle-key-wide {
     min-width: 64px;
+  }
+
+  .wordle-leaderboard-item {
+    grid-template-columns: auto 1fr;
+  }
+
+  .wordle-leaderboard-stat {
+    grid-column: 1 / -1;
+    align-items: flex-start;
+    padding-left: 62px;
   }
 }
