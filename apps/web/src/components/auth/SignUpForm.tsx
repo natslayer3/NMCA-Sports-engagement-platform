@@ -1,15 +1,15 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Auth } from "../../context/AuthContext";
-import { Button, FieldError, Form, Input, Label, TextField, Modal } from "@heroui/react";
-import { useNavigate } from "react-router-dom";
+import { Button, FieldError, Form, Input, Label, TextField } from "@heroui/react";
 
 interface SignUpProps {
     onSuccess: () => void;
+    onSwitchToSignIn: () => void;
 }
 
-export const SignupForm = ({onSuccess}: SignUpProps) => {
+export const SignupForm = ({ onSuccess, onSwitchToSignIn }: SignUpProps) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confPass, setConfPass] = useState("");
@@ -17,8 +17,7 @@ export const SignupForm = ({onSuccess}: SignUpProps) => {
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const { session, signUpNewUser } = Auth();
-    const navigate = useNavigate();
+    const { signUpNewUser } = Auth();
 
     const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -35,13 +34,12 @@ export const SignupForm = ({onSuccess}: SignUpProps) => {
             }
 
             setMessage(result.message);
-            console.log(message);
+            onSuccess();
         } catch (error) {
             console.error("Error signing up outside context ", error);
             setError("An unexpected error occurred during signup.");
         } finally {
             setLoading(false);
-            onSuccess();
         }
     };
 
@@ -125,15 +123,21 @@ export const SignupForm = ({onSuccess}: SignUpProps) => {
                     <span className="font-semibold text-slate-900">Privacy Policy</span>
                 </p>
                 <div className="max-w">
-                    <Button isDisabled={!email || !password || !confPass || password !== confPass} type="submit" className="mt-4 h-14 w-full rounded-2xl bg-slate-800">
-                    Sign Up
+                    <Button isDisabled={loading || !email || !password || !confPass || password !== confPass} type="submit" className="mt-4 h-14 w-full rounded-2xl bg-slate-800">
+                    {loading ? "Creating account..." : "Sign Up"}
                     </Button>
                 </div>
             </Form>
+            {error && (
+                <p className="mt-3 text-center text-sm text-red-600">{error}</p>
+            )}
+            {message && (
+                <p className="mt-3 text-center text-sm text-emerald-700">{message}</p>
+            )}
             <div className="flex items-center gap-4 mt-4">
                 <span className="h-px flex-1 bg-slate-300" />
                 <p className="mt-2 text-[16px] leading-6 text-[#5B6475]">Already have one? {" "} 
-                    <button onClick={() => navigate("/signin")} className="hover: cursor-pointer">
+                    <button type="button" onClick={onSwitchToSignIn} className="hover: cursor-pointer">
                         <span className="font-semibold text-slate-900"> Sign In</span>
                     </button>
                 </p>

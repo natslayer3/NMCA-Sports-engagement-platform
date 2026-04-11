@@ -1,15 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import { Auth } from "../../context/AuthContext"
 import "../../styles/google.css"
 
 export const SigninWithGoogle = () => {
     const { SignInWithGoogle } = Auth();
-    const navigate = useNavigate();
 
     const handleSignIn = () => {
         try{
             SignInWithGoogle();
-            navigate("/team");
         } catch(err) {
             console.error("Error with google sign in ", err);
         }

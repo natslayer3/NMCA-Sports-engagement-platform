@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { Auth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Button, FieldError, Form, Input, Label, Modal, TextField } from "@heroui/react";
+import { Button, FieldError, Form, Input, Label, TextField } from "@heroui/react";
 import { SigninWithGoogle } from "./SigninGoogle";
 
-export const SigninWithEmailForm = () => {
+interface SignInProps {
+    onSuccess: () => void;
+    onSwitchToSignUp: () => void;
+}
+
+export const SigninWithEmailForm = ({onSuccess,onSwitchToSignUp}: SignInProps) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -17,19 +22,21 @@ export const SigninWithEmailForm = () => {
         e.preventDefault();
         setError(null);
 
-        const { success, error } = await SignInUser(email, password);
+        try {
+            const result = await SignInUser(email, password);
+    
+            if (!result.success) {
+                setError(result.error ?? `An unexpected error occurred during signup ${error}`);
+                return;
+            }
 
-        if (error) {
-            setError(error);
-
-            setTimeout(() => {
-                setError("");
-            }, 3000);
-
-            return;
+            console.log(result.message);
+        } catch(error) {
+            console.error("Error signing up outside context ", error);
+        } finally {
+            onSuccess();
         }
 
-        navigate("/team");
     };
     //TODO: Implement Modal general component and forms for more structure, 
     // Sign in looks better, check docs and fix it
@@ -102,7 +109,7 @@ export const SigninWithEmailForm = () => {
                     <div className="flex flex-col items-center gap-4">   
                         <SigninWithGoogle />
                         <p className="mt-2 text-[16px] leading-6 text-[#5B6475]">Don´t have an account? {" "} 
-                            <button onClick={() => navigate("/signup")} className="hover: cursor-pointer">
+                            <button onClick={onSwitchToSignUp} className="hover: cursor-pointer">
                                 <span className="font-semibold text-slate-900"> Sign Up</span>
                             </button>
                         </p>
