@@ -11,6 +11,7 @@ import type { HistoryPageData, LegendaryPlayer, TimelineEvent } from "../types/h
 function HistoryPage() {
   const [historyData, setHistoryData] = useState<HistoryPageData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showAllMatches, setShowAllMatches] = useState(false);
   const [selectedTimelineEvent, setSelectedTimelineEvent] =
     useState<TimelineEvent | null>(null);
@@ -23,8 +24,12 @@ function HistoryPage() {
     async function loadHistoryData() {
       try {
         setLoading(true);
+        setError("");
         const response = await getHistoryPageData();
         setHistoryData(response);
+      } catch (loadError) {
+        console.error("Error loading history page:", loadError);
+        setError("No se pudo cargar la historia del equipo.");
       } finally {
         setLoading(false);
       }
@@ -34,6 +39,7 @@ function HistoryPage() {
   }, []);
 
   const historyStats = historyData?.historyStats ?? [];
+  const hero = historyData?.hero;
   const timelineEvents = historyData?.timelineEvents ?? [];
   const legendaryPlayers = historyData?.legendaryPlayers ?? [];
   const classicMatches = historyData?.classicMatches ?? [];
@@ -71,13 +77,19 @@ function HistoryPage() {
         <section className="mb-6 rounded-3xl border border-[#e6e9ef] bg-white px-8 py-[30px] shadow-[0_8px_20px_rgba(15,23,42,0.08)]">
           <div className="max-w-[760px]">
             <h1 className="mb-2.5 text-[42px] font-bold leading-[1.08] text-[#0c2340]">
-              History of the Tennessee Titans
+              {hero?.title || "History of the Tennessee Titans"}
             </h1>
             <p className="text-base leading-[1.6] text-slate-500">
-              From the Houston Oilers to Tennessee Titans -- A legacy of excellence
+              {hero?.subtitle || "From the Houston Oilers to Tennessee Titans -- A legacy of excellence"}
             </p>
           </div>
         </section>
+
+        {error ? (
+          <section className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            {error}
+          </section>
+        ) : null}
 
         <section className="mb-6">
           <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-[14px]">
@@ -106,7 +118,11 @@ function HistoryPage() {
             Historical Timeline
           </h2>
           <div className="grid gap-[14px]">
-            {timelineEvents.map((event) => (
+            {!loading && timelineEvents.length === 0 && !error ? (
+              <article className="rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                No timeline events available.
+              </article>
+            ) : timelineEvents.map((event) => (
               <TimelineItem
                 key={event.id}
                 event={event}
@@ -121,7 +137,11 @@ function HistoryPage() {
             Legendary Players
           </h2>
           <div className="mt-8 grid gap-6 lg:gap-7 md:grid-cols-2 lg:grid-cols-3">
-            {visiblePlayers.map((player) => (
+            {!loading && visiblePlayers.length === 0 && !error ? (
+              <article className="rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500 shadow-[0_1px_2px_rgba(15,23,42,0.04)] md:col-span-2 lg:col-span-3">
+                No legendary players available.
+              </article>
+            ) : visiblePlayers.map((player) => (
               <LegendaryPlayerCard
                 key={player.id}
                 player={player}
@@ -136,7 +156,11 @@ function HistoryPage() {
             Classic Matches Archive
           </h2>
           <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
-            {visibleMatches.map((match) => (
+            {!loading && visibleMatches.length === 0 && !error ? (
+              <article className="rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500 shadow-[0_1px_2px_rgba(15,23,42,0.04)] lg:col-span-2">
+                No classic matches available.
+              </article>
+            ) : visibleMatches.map((match) => (
               <ClassicMatchCard key={match.id} match={match} />
             ))}
           </div>

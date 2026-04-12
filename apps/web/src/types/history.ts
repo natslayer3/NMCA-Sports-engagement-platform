@@ -1,3 +1,8 @@
+export interface HistoryHero {
+  title: string;
+  subtitle: string;
+}
+
 export interface HistoryStat {
   id: string;
   value: string;
@@ -55,6 +60,7 @@ export interface ClassicMatch {
 }
 
 export interface HistoryPageData {
+  hero: HistoryHero;
   historyStats: HistoryStat[];
   timelineEvents: TimelineEvent[];
   legendaryPlayers: LegendaryPlayer[];

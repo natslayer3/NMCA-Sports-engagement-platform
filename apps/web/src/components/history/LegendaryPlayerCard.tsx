@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { LegendaryPlayer } from "../../types/history";
+import { getObjectPosition } from "./historyMedia";
 
 type LegendaryPlayerCardProps = {
   player: LegendaryPlayer;
@@ -11,6 +12,7 @@ function LegendaryPlayerCard({
   onOpenProfile,
 }: LegendaryPlayerCardProps) {
   const [showFallback, setShowFallback] = useState(!player.imageUrl);
+  const objectPosition = getObjectPosition(player.cardImagePositionClass) ?? "center 18%";
 
   useEffect(() => {
     setShowFallback(!player.imageUrl);
@@ -18,13 +20,14 @@ function LegendaryPlayerCard({
 
   return (
     <article className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(15,23,42,0.08)]">
-      <div className="relative h-[260px] overflow-hidden bg-[linear-gradient(135deg,#153865_0%,#4B92DB_100%)]">
+      <div className="relative h-[292px] overflow-hidden bg-[linear-gradient(135deg,#153865_0%,#4B92DB_100%)]">
         {!showFallback && player.imageUrl ? (
           <img
             alt={player.name}
-            className={`absolute inset-0 h-full w-full object-cover ${player.cardImagePositionClass ?? "object-center"}`}
+            className="absolute inset-0 h-full w-full object-cover"
             onError={() => setShowFallback(true)}
             src={player.imageUrl}
+            style={{ objectPosition }}
           />
         ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,35,64,0.02)_0%,rgba(12,35,64,0.24)_100%)]" />

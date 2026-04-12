@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { LegendaryPlayer } from "../../types/history";
+import { getObjectPosition } from "./historyMedia";
 
 type LegendaryPlayerModalProps = {
   player: LegendaryPlayer | null;
@@ -45,6 +46,7 @@ function LegendaryPlayerModal({
 
   const achievements = player.achievements.slice(0, 3);
   const stats = player.stats.slice(0, 4);
+  const objectPosition = getObjectPosition(player.cardImagePositionClass) ?? "center 18%";
 
   return (
     <div
@@ -71,9 +73,10 @@ function LegendaryPlayerModal({
             {!showFallback && player.imageUrl ? (
               <img
                 alt={player.name}
-                className="absolute inset-0 h-full w-full object-cover object-center"
+                className="absolute inset-0 h-full w-full object-cover"
                 onError={() => setShowFallback(true)}
                 src={player.imageUrl}
+                style={{ objectPosition }}
               />
             ) : null}
             {!showFallback ? (

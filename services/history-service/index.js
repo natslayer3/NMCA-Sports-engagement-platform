@@ -1,21 +1,46 @@
 const express = require("express");
-const { Pool } = require("pg");
 const {
-  classicMatches,
-  historyOverview,
-  historyStats,
-  legendaryPlayers,
-  timelineEvents,
-} = require("./historyData");
+  DEFAULT_TEAM_SLUG,
+  getClassicMatchesByPageId,
+  getHeroByPageId,
+  getHistoryPageContext,
+  getHistoryPageData,
+  getHistoryStatsByPageId,
+  getLegendaryPlayersByPageId,
+  getTimelineEventsByPageId,
+} = require("./historyRepository");
+const { pool } = require("./db");
 
 const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 4007;
 
-const pool = new Pool({
-  connectionString: process.env.HISTORY_DB_URL,
-});
+function resolveTeamSlug(req) {
+  return req.params.teamSlug || req.query.teamSlug || DEFAULT_TEAM_SLUG;
+}
+
+function buildDatabaseError(error) {
+  if (error.code === "42501") {
+    return "Database permission denied for history-service user";
+  }
+
+  return error.message;
+}
+
+function asyncHandler(handler) {
+  return async (req, res) => {
+    try {
+      await handler(req, res);
+    } catch (error) {
+      console.error("history-service error:", error);
+      res.status(500).json({
+        status: "error",
+        error: buildDatabaseError(error),
+      });
+    }
+  };
+}
 
 app.get("/", (req, res) => {
   res.json({
@@ -23,19 +48,23 @@ app.get("/", (req, res) => {
     status: "ok",
     endpoints: [
       "/health",
-      "/overview",
+      "/hero",
+      "/history/hero",
       "/stats",
+      "/history/stats",
       "/timeline",
-      "/timeline/:id",
+      "/history/timeline",
       "/players",
-      "/players/:id",
+      "/history/players",
       "/matches",
-      "/matches/:id",
+      "/history/matches",
+      "/history-page/:teamSlug",
+      "/overview",
     ],
   });
 });
 
-app.get("/health", async (req, res) => {
+app.get("/health", asyncHandler(async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW() AS now");
     res.json({
@@ -52,63 +81,93 @@ app.get("/health", async (req, res) => {
       error: error.message,
     });
   }
-});
+}));
 
-app.get("/overview", (req, res) => {
-  res.json(historyOverview);
-});
+app.get(["/hero", "/history/hero"], asyncHandler(async (req, res) => {
+  const page = await getHistoryPageContext(resolveTeamSlug(req));
 
-app.get("/stats", (req, res) => {
+  if (!page) {
+    return res.status(404).json({
+      status: "error",
+      error: "History page not found",
+    });
+  }
+
+  const hero = await getHeroByPageId(page.page_id);
+  res.json(hero);
+}));
+
+app.get(["/stats", "/history/stats"], asyncHandler(async (req, res) => {
+  const page = await getHistoryPageContext(resolveTeamSlug(req));
+
+  if (!page) {
+    return res.status(404).json({
+      status: "error",
+      error: "History page not found",
+    });
+  }
+
+  const historyStats = await getHistoryStatsByPageId(page.page_id);
   res.json(historyStats);
-});
+}));
 
-app.get("/timeline", (req, res) => {
+app.get(["/timeline", "/history/timeline"], asyncHandler(async (req, res) => {
+  const page = await getHistoryPageContext(resolveTeamSlug(req));
+
+  if (!page) {
+    return res.status(404).json({
+      status: "error",
+      error: "History page not found",
+    });
+  }
+
+  const timelineEvents = await getTimelineEventsByPageId(page.page_id);
   res.json(timelineEvents);
-});
+}));
 
-app.get("/timeline/:id", (req, res) => {
-  const event = timelineEvents.find((item) => item.id === req.params.id);
+app.get(["/players", "/history/players"], asyncHandler(async (req, res) => {
+  const page = await getHistoryPageContext(resolveTeamSlug(req));
 
-  if (!event) {
+  if (!page) {
     return res.status(404).json({
-      error: "Timeline event not found",
+      status: "error",
+      error: "History page not found",
     });
   }
 
-  res.json(event);
-});
-
-app.get("/players", (req, res) => {
+  const legendaryPlayers = await getLegendaryPlayersByPageId(page.page_id);
   res.json(legendaryPlayers);
-});
+}));
 
-app.get("/players/:id", (req, res) => {
-  const player = legendaryPlayers.find((item) => item.id === req.params.id);
+app.get(["/matches", "/history/matches"], asyncHandler(async (req, res) => {
+  const page = await getHistoryPageContext(resolveTeamSlug(req));
 
-  if (!player) {
+  if (!page) {
     return res.status(404).json({
-      error: "Legendary player not found",
+      status: "error",
+      error: "History page not found",
     });
   }
 
-  res.json(player);
-});
-
-app.get("/matches", (req, res) => {
+  const classicMatches = await getClassicMatchesByPageId(page.page_id);
   res.json(classicMatches);
-});
+}));
 
-app.get("/matches/:id", (req, res) => {
-  const match = classicMatches.find((item) => item.id === req.params.id);
+app.get(
+  ["/history-page/:teamSlug?", "/overview", "/history/overview"],
+  asyncHandler(async (req, res) => {
+    const historyPage = await getHistoryPageData(resolveTeamSlug(req));
 
-  if (!match) {
-    return res.status(404).json({
-      error: "Classic match not found",
-    });
-  }
+    if (!historyPage) {
+      return res.status(404).json({
+        status: "error",
+        error: "History page not found",
+      });
+    }
 
-  res.json(match);
-});
+    res.json(historyPage);
+  }),
+);
 
 app.listen(PORT, () => {
   console.log(`history-service listening on port ${PORT}`);
