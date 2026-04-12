@@ -12,6 +12,7 @@ services:
       - analytics-service
       - store-service
       - history-service
+      - offseason-service
       - tweets-service
     networks:
       - supabase_net
@@ -76,6 +77,18 @@ services:
       HISTORY_DB_URL: postgresql://history_svc:postgres@supabase-db-do4ksgcc0wksg4wwg4osgk0o:5432/history_db
     ports:
     - "4008:4008"
+    networks:
+      - supabase_net
+
+  offseason-service:
+    build:
+      context: ../services/offseason-service
+    container_name: icarus-offseason
+    environment:
+      PORT: 4010
+      OFFSEASON_DB_URL: postgresql://offseason_svc:OffseasonSvc_2026_dev@supabase-db-do4ksgcc0wksg4wwg4osgk0o:5432/offseason_db
+    ports:
+      - "4010:4010"
     networks:
       - supabase_net
 

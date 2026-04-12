@@ -18,3 +18,7 @@ services:
   history-service:
     environment:
       HISTORY_DB_URL: postgresql://history_svc:postgres@host.docker.internal:15432/history_db
+
+  offseason-service:
+    environment:
+      OFFSEASON_DB_URL: postgresql://offseason_svc:OffseasonSvc_2026_dev@host.docker.internal:15432/offseason_db
