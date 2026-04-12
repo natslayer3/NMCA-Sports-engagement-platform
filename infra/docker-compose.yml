@@ -12,6 +12,7 @@ services:
       - analytics-service
       - store-service
       - history-service
+      - tweets-service
     networks:
       - supabase_net
 
@@ -75,6 +76,16 @@ services:
       HISTORY_DB_URL: postgresql://history_svc:postgres@supabase-db-do4ksgcc0wksg4wwg4osgk0o:5432/history_db
     ports:
     - "4007:4007"
+    networks:
+      - supabase_net
+
+  tweets-service:
+    build:
+      context: ../services/tweets-service
+    container_name: icarus-tweets
+    environment:
+      PORT: 4007
+      GETXAPI_KEY: ${GETXAPI_KEY}
     networks:
       - supabase_net
 
