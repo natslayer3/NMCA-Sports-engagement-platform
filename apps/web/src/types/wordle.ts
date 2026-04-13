@@ -1,7 +1,7 @@
 export interface WordleConfig {
   gameId: number;
   gameName: string;
-  userId: number;
+  userId: number | null;
   puzzleDate: string;
   maxAttempts: number;
   wordLength: number;
@@ -10,7 +10,7 @@ export interface WordleConfig {
 export interface WordleLeaderboardEntry {
   leaderboardId: number;
   gameId: number;
-  userId: number;
+  userId: number | string;
   playerName: string;
   score: number;
   rank: number;
@@ -28,7 +28,7 @@ export interface WordleLeaderboardResponse {
 export interface WordleSession {
   sessionId: number;
   gameId: number;
-  userId: number;
+  userId: number | string;
   score: number;
   playtimeSeconds: number;
   playedAt: string;
@@ -38,12 +38,12 @@ export interface WordleSession {
 
 export interface WordleHistoryResponse {
   gameId: number;
-  userId: number;
+  userId: number | string;
   sessions: WordleSession[];
 }
 
 export interface SaveWordleSessionPayload {
-  user_id?: number;
+  user_id?: number | string;
   attempt_count: number;
   playtime_seconds: number;
   played_at?: string;

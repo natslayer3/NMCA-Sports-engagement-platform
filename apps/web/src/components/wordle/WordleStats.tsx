@@ -26,14 +26,16 @@ function WordleStats({
   puzzleDate,
 }: WordleStatsProps) {
   const topEntries = useMemo(() => {
-    const seenUsers = new Set<number>();
+    const seenUsers = new Set<string>();
 
     return entries.filter((entry) => {
-      if (seenUsers.has(entry.userId)) {
+      const userKey = String(entry.userId);
+
+      if (seenUsers.has(userKey)) {
         return false;
       }
 
-      seenUsers.add(entry.userId);
+      seenUsers.add(userKey);
       return true;
     }).slice(0, 5);
   }, [entries]);

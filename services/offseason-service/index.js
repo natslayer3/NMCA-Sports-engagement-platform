@@ -6,7 +6,6 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4010;
 const WORDLE_GAME_ID = 1;
-const DEFAULT_USER_ID = 1;
 const DEFAULT_TIMEZONE = process.env.WORDLE_TIMEZONE || "America/Monterrey";
 const MAX_ATTEMPTS = 6;
 const WORD_LENGTH = 5;
@@ -66,6 +65,16 @@ function parsePositiveInteger(value, fieldName, { allowZero = false, fallback } 
   return parsedValue;
 }
 
+function getAuthUserIdFromRequest(req) {
+  const headerValue = req.headers["x-user-id"];
+
+  if (Array.isArray(headerValue)) {
+    return headerValue[0] || null;
+  }
+
+  return headerValue || null;
+}
+
 function serializeSession(row) {
   return {
     sessionId: row.session_id,
@@ -84,7 +93,7 @@ function serializeLeaderboardEntry(row) {
     leaderboardId: row.leaderboard_id,
     gameId: row.game_id,
     userId: row.user_id,
-    playerName: `User ${row.user_id}`,
+    playerName: row.player_name || `User ${row.user_id}`,
     score: row.score,
     rank: row.rank,
     attemptCount: row.attempt_count,
@@ -93,26 +102,46 @@ function serializeLeaderboardEntry(row) {
   };
 }
 
-async function getProfileName(userId) {
+async function getProfileByAuthUserId(authUserId) {
+  const response = await fetch(`${PROFILE_SERVICE_URL}/me`, {
+    headers: {
+      "x-user-id": authUserId,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Profile lookup failed with status ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (!data?.profile) {
+    throw new Error("Profile response is missing profile data");
+  }
+
+  return data.profile;
+}
+
+async function getProfileName(accountId) {
   try {
-    const response = await fetch(`${PROFILE_SERVICE_URL}/${userId}`);
+    const response = await fetch(`${PROFILE_SERVICE_URL}/account/${accountId}`);
 
     if (!response.ok) {
-      return `User ${userId}`;
+      return `User ${accountId}`;
     }
 
     const data = await response.json();
     const profile = data?.profile;
 
     if (!profile) {
-      return `User ${userId}`;
+      return `User ${accountId}`;
     }
 
     const firstName = (profile.first_name || "").trim();
-    return profile.username || firstName || `User ${userId}`;
+    return profile.username || firstName || `User ${accountId}`;
   } catch (error) {
-    console.error(`offseason-service profile lookup failed for user ${userId}:`, error);
-    return `User ${userId}`;
+    console.error(`offseason-service profile lookup failed for account ${accountId}:`, error);
+    return `User ${accountId}`;
   }
 }
 
@@ -134,18 +163,18 @@ async function getWordleConfig() {
   return {
     gameId: result.rows[0].game_id,
     gameName: result.rows[0].name,
-    userId: DEFAULT_USER_ID,
+    userId: null,
     puzzleDate: formatDateInTimezone(),
     maxAttempts: MAX_ATTEMPTS,
     wordLength: WORD_LENGTH,
   };
 }
 
-async function getWordleLeaderboardByDate(puzzleDateInput) {
+async function getWordleLeaderboardRows(queryable, puzzleDateInput) {
   const puzzleDate = normalizePuzzleDate(puzzleDateInput);
-  const result = await pool.query(
+  const result = await queryable.query(
     `
-      WITH best_sessions AS (
+      WITH first_sessions AS (
         SELECT
           session_id,
           game_id,
@@ -156,8 +185,8 @@ async function getWordleLeaderboardByDate(puzzleDateInput) {
           played_at,
           ROW_NUMBER() OVER (
             PARTITION BY user_id
-            ORDER BY attempt_count ASC, playtime_seconds ASC, played_at ASC, session_id ASC
-          ) AS best_session_rank
+            ORDER BY played_at ASC, session_id ASC
+          ) AS first_session_rank
         FROM game_sessions
         WHERE game_id = $1
           AND puzzle_date = $2
@@ -173,8 +202,8 @@ async function getWordleLeaderboardByDate(puzzleDateInput) {
           ROW_NUMBER() OVER (
             ORDER BY attempt_count ASC, playtime_seconds ASC, played_at ASC, user_id ASC
           ) AS rank
-        FROM best_sessions
-        WHERE best_session_rank = 1
+        FROM first_sessions
+        WHERE first_session_rank = 1
       )
       SELECT
         session_id AS leaderboard_id,
@@ -192,8 +221,17 @@ async function getWordleLeaderboardByDate(puzzleDateInput) {
     [WORDLE_GAME_ID, puzzleDate],
   );
 
+  return {
+    puzzleDate,
+    rows: result.rows,
+  };
+}
+
+async function getWordleLeaderboardByDate(puzzleDateInput, queryable = pool) {
+  const { puzzleDate, rows } = await getWordleLeaderboardRows(queryable, puzzleDateInput);
+
   const rowsWithNames = await Promise.all(
-    result.rows.map(async (row) => ({
+    rows.map(async (row) => ({
       ...row,
       player_name: await getProfileName(row.user_id),
     })),
@@ -210,7 +248,7 @@ async function getWordleLeaderboardByDate(puzzleDateInput) {
 }
 
 async function getWordleHistoryByUser(userIdInput) {
-  const userId = parsePositiveInteger(userIdInput, "user_id", { fallback: DEFAULT_USER_ID });
+  const userId = parsePositiveInteger(userIdInput, "user_id");
   const result = await pool.query(
     `
       SELECT session_id, game_id, user_id, score, playtime_seconds, played_at, attempt_count, puzzle_date
@@ -252,7 +290,7 @@ async function rebuildWordleLeaderboard(client, puzzleDateInput) {
         playtime_seconds,
         puzzle_date
       )
-      WITH best_sessions AS (
+      WITH first_sessions AS (
         SELECT
           game_id,
           user_id,
@@ -262,8 +300,8 @@ async function rebuildWordleLeaderboard(client, puzzleDateInput) {
           played_at,
           ROW_NUMBER() OVER (
             PARTITION BY user_id
-            ORDER BY attempt_count ASC, playtime_seconds ASC, played_at ASC, session_id ASC
-          ) AS best_session_rank
+            ORDER BY played_at ASC, session_id ASC
+          ) AS first_session_rank
         FROM game_sessions
         WHERE game_id = $1
           AND puzzle_date = $2
@@ -278,8 +316,8 @@ async function rebuildWordleLeaderboard(client, puzzleDateInput) {
           ROW_NUMBER() OVER (
             ORDER BY attempt_count ASC, playtime_seconds ASC, played_at ASC, user_id ASC
           ) AS rank
-        FROM best_sessions
-        WHERE best_session_rank = 1
+        FROM first_sessions
+        WHERE first_session_rank = 1
       )
       SELECT
         game_id,
@@ -293,14 +331,24 @@ async function rebuildWordleLeaderboard(client, puzzleDateInput) {
     `,
     [WORDLE_GAME_ID, puzzleDate],
   );
-
-  return getWordleLeaderboardByDate(puzzleDate);
 }
 
-async function saveWordleSession(payload) {
-  const userId = parsePositiveInteger(payload.user_id, "user_id", {
-    fallback: DEFAULT_USER_ID,
-  });
+async function resolveWordleUserId(payload, authUserId) {
+  if (authUserId) {
+    const profile = await getProfileByAuthUserId(authUserId);
+
+    return parsePositiveInteger(profile.account_id, "account_id");
+  }
+
+  if (payload.user_id !== undefined && payload.user_id !== null) {
+    return parsePositiveInteger(payload.user_id, "user_id");
+  }
+
+  throw new Error("Authentication is required to save a Wordle session.");
+}
+
+async function saveWordleSession(payload, authUserId) {
+  const userId = await resolveWordleUserId(payload, authUserId);
   const attemptCount = parsePositiveInteger(payload.attempt_count, "attempt_count");
   const playtimeSeconds = parsePositiveInteger(payload.playtime_seconds, "playtime_seconds", {
     allowZero: true,
@@ -311,6 +359,31 @@ async function saveWordleSession(payload) {
 
   try {
     await client.query("BEGIN");
+
+    const existingSessionResult = await client.query(
+      `
+        SELECT session_id, game_id, user_id, score, playtime_seconds, played_at, attempt_count, puzzle_date
+        FROM game_sessions
+        WHERE game_id = $1
+          AND user_id = $2
+          AND puzzle_date = $3
+        ORDER BY played_at ASC, session_id ASC
+        LIMIT 1;
+      `,
+      [WORDLE_GAME_ID, userId, puzzleDate],
+    );
+
+    if (existingSessionResult.rowCount > 0) {
+      await rebuildWordleLeaderboard(client, puzzleDate);
+      const leaderboard = await getWordleLeaderboardByDate(puzzleDate, client);
+
+      await client.query("COMMIT");
+
+      return {
+        session: serializeSession(existingSessionResult.rows[0]),
+        leaderboard,
+      };
+    }
 
     const insertResult = await client.query(
       `
@@ -337,7 +410,8 @@ async function saveWordleSession(payload) {
       ],
     );
 
-    const leaderboard = await rebuildWordleLeaderboard(client, puzzleDate);
+    await rebuildWordleLeaderboard(client, puzzleDate);
+    const leaderboard = await getWordleLeaderboardByDate(puzzleDate, client);
 
     await client.query("COMMIT");
 
@@ -424,7 +498,24 @@ app.get("/wordle/leaderboard/:date", asyncHandler(async (req, res) => {
 }));
 
 app.get("/wordle/history", asyncHandler(async (req, res) => {
-  const history = await getWordleHistoryByUser(req.query.userId || DEFAULT_USER_ID);
+  if (req.query.userId) {
+    const history = await getWordleHistoryByUser(req.query.userId);
+    res.json(history);
+    return;
+  }
+
+  const authUserId = getAuthUserIdFromRequest(req);
+
+  if (!authUserId) {
+    res.status(400).json({
+      status: "error",
+      error: "Authentication is required to load personal Wordle history.",
+    });
+    return;
+  }
+
+  const profile = await getProfileByAuthUserId(authUserId);
+  const history = await getWordleHistoryByUser(profile.account_id);
   res.json(history);
 }));
 
@@ -442,7 +533,7 @@ app.post("/wordle/session", asyncHandler(async (req, res) => {
     puzzle_date: req.body.puzzle_date,
   };
 
-  const savedSession = await saveWordleSession(payload);
+  const savedSession = await saveWordleSession(payload, getAuthUserIdFromRequest(req));
   res.status(201).json(savedSession);
 }));
 

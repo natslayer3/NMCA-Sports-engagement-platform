@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Auth } from "../../context/AuthContext";
 import { useWordle } from "../../hooks/useWordle";
 import {
   getWordleConfig,
@@ -14,6 +15,7 @@ import WordleKeyboard from "./WordleKeyboard";
 import WordleStats from "./WordleStats";
 
 function WordleGame() {
+  const { session } = Auth();
   const [config, setConfig] = useState<WordleConfig | null>(null);
   const [leaderboard, setLeaderboard] = useState<WordleLeaderboardResponse | null>(null);
   const [loadingData, setLoadingData] = useState(true);
@@ -53,6 +55,12 @@ function WordleGame() {
       return;
     }
 
+    if (!session?.user?.id) {
+      setIsSaving(false);
+      setSaveError("Juega como invitado o inicia sesion para guardar tu resultado en el leaderboard.");
+      return;
+    }
+
     setIsSaving(true);
     setSaveError(null);
 
@@ -62,11 +70,10 @@ function WordleGame() {
         Math.round((Date.now() - sessionStartedAtRef.current) / 1000),
       );
       const response = await saveWordleSession({
-        user_id: config.userId,
         attempt_count: attemptCount,
         playtime_seconds: playtimeSeconds,
         puzzle_date: puzzleDate,
-      });
+      }, session.user.id);
 
       setLeaderboard(response.leaderboard);
     } catch (error) {
@@ -75,7 +82,7 @@ function WordleGame() {
     } finally {
       setIsSaving(false);
     }
-  }, [config]);
+  }, [config, session]);
 
   const {
     attempt,
@@ -159,6 +166,11 @@ function WordleGame() {
         <h2 className="wordle-card-title">Off-Season Word Challenge</h2>
         <p className="wordle-card-copy">
           Un minijuego de 5 letras dentro del mismo apartado de Offseason.
+        </p>
+        <p className="wordle-message">
+          {session?.user?.id
+            ? "Tu primer intento del dia se guarda en el leaderboard con tu nickname."
+            : "Modo invitado: puedes jugar, pero tu resultado no se guarda hasta iniciar sesion."}
         </p>
         {loadingMessage ? <p className="wordle-message">{loadingMessage}</p> : null}
         {saveError ? <p className="wordle-message">{saveError}</p> : null}
