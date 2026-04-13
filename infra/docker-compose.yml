@@ -12,6 +12,7 @@ services:
       - profile-service
       - analytics-service
       - store-service
+      - cards-service
     networks:
       - supabase_net
 
@@ -74,6 +75,16 @@ services:
     environment:
       PORT: 4006
       PROFILE_DB_URL: postgresql://profile_svc:ProfileSvc_2026_dev@supabase-db:5432/profile_db
+    networks:
+      - supabase_net
+
+  cards-service:
+    build:
+      context: ../services/cards-service
+    container_name: icarus-cards
+    environment:
+      PORT: 4009
+      CARDS_DB_URL: postgresql://cards_svc:CardsSvc_2026_dev@supabase-db-do4ksgcc0wksg4wwg4osgk0o:5432/cards_db
     networks:
       - supabase_net
 
