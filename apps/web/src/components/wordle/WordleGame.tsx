@@ -14,6 +14,8 @@ import WordleGrid from "./WordleGrid";
 import WordleKeyboard from "./WordleKeyboard";
 import WordleStats from "./WordleStats";
 
+const MESSAGE_CLASS = "m-0 min-h-6 text-center font-semibold text-[#4f6173]";
+
 function WordleGame() {
   const { session } = Auth();
   const [config, setConfig] = useState<WordleConfig | null>(null);
@@ -160,41 +162,43 @@ function WordleGame() {
   }, [handleInput]);
 
   return (
-    <section className="wordle-card">
-      <header className="wordle-card-header">
-        <p className="wordle-card-kicker">WORDLE</p>
-        <h2 className="wordle-card-title">Off-Season Word Challenge</h2>
-        <p className="wordle-card-copy">
+    <section className="rounded-2xl border border-[#d8dee5] bg-white p-6">
+      <header className="mb-5">
+        <p className="mb-2 text-[12px] font-extrabold tracking-[0.18em] text-[#d62839]">WORDLE</p>
+        <h2 className="mb-2 text-[32px] font-bold text-[#0b2a55] max-[900px]:text-[26px]">
+          Off-Season Word Challenge
+        </h2>
+        <p className="m-0 leading-[1.6] text-[#516173]">
           Un minijuego de 5 letras dentro del mismo apartado de Offseason.
         </p>
-        <p className="wordle-message">
+        <p className={MESSAGE_CLASS}>
           {session?.user?.id
             ? "Tu primer intento del dia se guarda en el leaderboard con tu nickname."
             : "Modo invitado: puedes jugar, pero tu resultado no se guarda hasta iniciar sesion."}
         </p>
-        {loadingMessage ? <p className="wordle-message">{loadingMessage}</p> : null}
-        {saveError ? <p className="wordle-message">{saveError}</p> : null}
-        {isSaving ? <p className="wordle-message">Guardando resultado...</p> : null}
+        {loadingMessage ? <p className={MESSAGE_CLASS}>{loadingMessage}</p> : null}
+        {saveError ? <p className={MESSAGE_CLASS}>{saveError}</p> : null}
+        {isSaving ? <p className={MESSAGE_CLASS}>Guardando resultado...</p> : null}
       </header>
 
-      <div className="wordle-layout">
-        <div className="wordle-main">
+      <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(280px,0.8fr)] items-start gap-5 max-[900px]:grid-cols-1">
+        <div className="grid gap-4 rounded-[14px] border border-[#d8dee5] bg-[#f8fafc] p-5">
           <WordleGrid board={board} />
-          <p className="wordle-message">{message}</p>
-          <p className="wordle-message">
+          <p className={MESSAGE_CLASS}>{message}</p>
+          <p className={MESSAGE_CLASS}>
             Puzzle diario: {puzzleDate} · Intento {Math.min(attempt + 1, maxAttempts)} de {maxAttempts}
           </p>
 
-          <div className="wordle-keyboard-shell">
+          <div className="rounded-xl border border-[#d8dee5] bg-[#f5f8fb] p-4 shadow-none">
             <WordleKeyboard keyboardStatus={keyboardStatus} onKeyPress={handleInput} />
           </div>
 
           {gameStatus !== "playing" ? (
-            <p className="wordle-answer">Palabra: {targetWord}</p>
+            <p className="m-0 text-center font-bold text-[#0b2a55]">Palabra: {targetWord}</p>
           ) : null}
         </div>
 
-        <aside className="wordle-sidebar">
+        <aside className="grid gap-4">
           <WordleStats
             entries={leaderboard?.entries ?? []}
             errorMessage={loadingMessage}
