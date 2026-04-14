@@ -31,23 +31,21 @@ function NewsPage() {
   }, []);
 
   return (
-    <div className="team-page">
-        <main className="team-container">
+    <div className="min-h-screen bg-[#F4F5F7]">
+      <main className="mx-auto w-full max-w-[1400px] p-6">
         <Navbar />
 
         <section className="news-section">
           <h1 className="news-title">Titans News & Updates</h1>
         </section>
 
-        <NewsCardHorizontal/>
+        <NewsCardHorizontal />
 
         <section className="news-subsection">
           <h1 className="news-subtitle">Latest News</h1>
         </section>
 
-
-        <NewsCard/>
-        
+        <NewsCard />
       </main>
     </div>
   );

@@ -25,7 +25,7 @@ function NewsHome() {
         console.error("Error loading home news:", err);
 
         if (isMounted) {
-          setError("No se pudieron cargar las noticias.");
+          setError("Could not load news.");
         }
       } finally {
         if (isMounted) {

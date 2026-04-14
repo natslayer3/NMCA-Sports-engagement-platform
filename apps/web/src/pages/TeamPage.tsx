@@ -237,10 +237,9 @@ function TeamPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f5f7]">
-      <Navbar />
-
-      <main className="max-w-6xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-[#F4F5F7]">
+      <main className="mx-auto w-full max-w-[1400px] p-6">
+        <Navbar />
         {/* Header + Progress */}
         <div className="mb-6">
           <CollectionHeader stats={stats} />
@@ -271,13 +270,13 @@ function TeamPage() {
           </div>
         ) : fetchError ? (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-950 shadow-sm">
-            <p className="font-semibold">No se pudo cargar el roster</p>
+            <p className="font-semibold">Could not load roster</p>
             <p className="mt-2 font-mono text-sm text-amber-900/90">{fetchError}</p>
             <p className="mt-3 text-sm text-amber-900/85">
-              Suele pasar si <strong>cards-service</strong> no está en marcha o no escucha en el puerto
-              del proxy de Vite (revisa <code className="rounded bg-amber-100/80 px-1">apps/web/vite.config.ts</code>,
-              p. ej. <code className="rounded bg-amber-100/80 px-1">localhost:4009</code>). Arranca el servicio o
-              ajusta el puerto y recarga.
+              This usually happens if <strong>cards-service</strong> is not running or is not reachable on the
+              Vite proxy port (check <code className="rounded bg-amber-100/80 px-1">apps/web/vite.config.ts</code>,
+              e.g. <code className="rounded bg-amber-100/80 px-1">localhost:4009</code>). Start the service or
+              adjust the port and reload.
             </p>
           </div>
         ) : (

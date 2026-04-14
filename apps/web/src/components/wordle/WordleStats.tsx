@@ -49,17 +49,17 @@ function WordleStats({
         <h3 className="m-0 text-2xl font-extrabold">Leaderboard</h3>
         <p className={COPY_CLASS}>
           {puzzleDate
-            ? `Mejores 5 registros del dia ${puzzleDate}.`
-            : "Mejores 5 registros del dia por intentos, tiempo y orden de finalizacion."}
+            ? `Top 5 scores for ${puzzleDate}.`
+            : "Top 5 scores for the day by attempts, time, and finish order."}
         </p>
       </div>
 
       <div className="flex flex-col gap-3">
-        {isLoading ? <p className={COPY_CLASS}>Cargando leaderboard...</p> : null}
+        {isLoading ? <p className={COPY_CLASS}>Loading leaderboard...</p> : null}
         {errorMessage ? <p className={COPY_CLASS}>{errorMessage}</p> : null}
 
         {!isLoading && !errorMessage && topEntries.length === 0 ? (
-          <p className={COPY_CLASS}>Todavia no hay resultados para este puzzle.</p>
+          <p className={COPY_CLASS}>No scores for this puzzle yet.</p>
         ) : null}
 
         {topEntries.map((player) => (
@@ -74,7 +74,7 @@ function WordleStats({
             <div className="flex min-w-0 flex-col gap-1">
               <p className="m-0 text-base font-extrabold">{player.playerName}</p>
               <p className="m-0 text-[13px] font-semibold text-[#58718d]">
-                {player.attemptCount} intentos · {formatPlaytime(player.playtimeSeconds)}
+                {player.attemptCount} attempts · {formatPlaytime(player.playtimeSeconds)}
               </p>
             </div>
 

@@ -35,18 +35,18 @@ function MatchesPage() {
           setMatches(mappedMatches);
         } else {
           console.error("Error loading matches:", matchesResult.reason);
-          setError("No se pudieron cargar los partidos.");
+          setError("Could not load matches.");
         }
 
         if (profileResult.status === "fulfilled") {
           setProfile(profileResult.value);
         } else {
           console.error("Error loading profile:", profileResult.reason);
-          setProfileError("No se pudo cargar el perfil.");
+          setProfileError("Could not load profile.");
         }
       } catch (err) {
         console.error("Error loading page data:", err);
-        setError("No se pudieron cargar los partidos.");
+        setError("Could not load matches.");
       } finally {
         setLoading(false);
       }
@@ -88,12 +88,12 @@ function MatchesPage() {
           </div>
         </section>
 
-        {loading && <p style={styles.message}>Cargando partidos...</p>}
+        {loading && <p style={styles.message}>Loading matches...</p>}
 
         {error && <p style={styles.error}>{error}</p>}
 
         {!loading && !error && matches.length === 0 && (
-          <p style={styles.message}>No hay partidos disponibles.</p>
+          <p style={styles.message}>No matches available.</p>
         )}
 
         {!loading && !error && matches.length > 0 && (

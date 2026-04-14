@@ -29,7 +29,7 @@ function HistoryPage() {
         setHistoryData(response);
       } catch (loadError) {
         console.error("Error loading history page:", loadError);
-        setError("No se pudo cargar la historia del equipo.");
+        setError("Could not load team history.");
       } finally {
         setLoading(false);
       }

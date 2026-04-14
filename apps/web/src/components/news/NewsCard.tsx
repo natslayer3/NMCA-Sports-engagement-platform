@@ -51,7 +51,7 @@ function NewsCard() {
         console.error("Error loading news:", err);
 
         if (isMounted) {
-          setError("No se pudieron cargar las noticias.");
+          setError("Could not load news.");
         }
       } finally {
         if (isMounted) {

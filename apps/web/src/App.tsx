@@ -10,6 +10,7 @@ import VoiceAgent from "./components/VoiceAgent/VoiceAgent";
 import PrivateRoute from "./components/auth/privateRoute";
 import NewsPage from "./pages/NewsPage";
 import HomePage from "./pages/HomePage";
+import CommunityPage from "./pages/CommunityPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Route path="/matches" element={<MatchesPage />} />
       <Route path="/matches/:id" element={<MatchRoomPage />} />
       <Route path="/team" element={<TeamPage />} />
+      <Route path="/community" element={<CommunityPage />} />
       <Route path="/history" element={<HistoryPage />} />
       <Route path="/store" element={<StorePage />} />
       <Route path="/paySuccess" element={<PaySuccess />} />

@@ -55,7 +55,7 @@ function displayNameFromSession(user: {
 function messageAuthorLabel(msg: ChatMessageRow): string {
   const fromRow = msg.display_name?.trim();
   if (fromRow) return fromRow;
-  return `Usuario ${shortUserLabel(msg.user_id)}`;
+  return `User ${shortUserLabel(msg.user_id)}`;
 }
 
 function FanChat({ matchId }: FanChatProps) {
@@ -77,7 +77,7 @@ function FanChat({ matchId }: FanChatProps) {
       setMessages(rows);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error al cargar mensajes");
+      setError(e instanceof Error ? e.message : "Failed to load messages");
     }
   }, [matchId]);
 
@@ -99,7 +99,7 @@ function FanChat({ matchId }: FanChatProps) {
         await refresh();
         interval = setInterval(refresh, POLL_MS);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "No se pudo iniciar el chat");
+        setError(e instanceof Error ? e.message : "Could not start chat");
         setReady(false);
       }
     })();
@@ -118,7 +118,7 @@ function FanChat({ matchId }: FanChatProps) {
       await postMatchMessage(matchId, userId, text, senderDisplayName);
       await refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error al enviar");
+      setError(e instanceof Error ? e.message : "Failed to send");
     }
   }
 
@@ -126,7 +126,7 @@ function FanChat({ matchId }: FanChatProps) {
     return (
       <div className="fan-chat">
         <h3>Fan Chat</h3>
-        <p>Inicia sesión para participar en el chat de este partido.</p>
+        <p>Sign in to join the chat for this match.</p>
       </div>
     );
   }
@@ -136,9 +136,8 @@ function FanChat({ matchId }: FanChatProps) {
       <div className="fan-chat">
         <h3>Fan Chat</h3>
         <p>
-          No hay un identificador de usuario válido (UUID de Supabase). Cierra sesión y vuelve a
-          entrar. En desarrollo puedes definir <code>VITE_CHAT_DEV_USER_ID</code> con un UUID
-          válido.
+          No valid user id (Supabase UUID). Sign out and sign back in. In development you can set{" "}
+          <code>VITE_CHAT_DEV_USER_ID</code> to a valid UUID.
         </p>
       </div>
     );

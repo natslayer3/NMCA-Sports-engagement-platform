@@ -15,7 +15,7 @@ function MatchRoomPage() {
         type="button"
         onClick={() => navigate("/matches")}
         className="close-button"
-        aria-label="Cerrar"
+        aria-label="Close"
       >
         x
       </button>
@@ -26,7 +26,7 @@ function MatchRoomPage() {
         {Number.isFinite(matchId) ? (
           <FanChat matchId={matchId} />
         ) : (
-          <div className="fan-chat">Partido no válido.</div>
+          <div className="fan-chat">Invalid match.</div>
         )}
         <TwitterFeed />
       </div>

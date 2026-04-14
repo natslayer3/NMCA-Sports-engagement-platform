@@ -50,7 +50,7 @@ export function NewsCardHorizontal() {
         console.error("Error loading horizontal news:", err);
 
         if (isMounted) {
-          setError("No se pudieron cargar las noticias.");
+          setError("Could not load news.");
         }
       } finally {
         if (isMounted) {

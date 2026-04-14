@@ -16,9 +16,9 @@ function formatTag(status: string | undefined): { text: string; className: strin
     return { text: "FINAL", className: "scoreboard-tag scoreboard-tag--final" };
   }
   if (s === "in_progress" || s === "live") {
-    return { text: "EN VIVO", className: "scoreboard-tag scoreboard-tag--live" };
+    return { text: "LIVE", className: "scoreboard-tag scoreboard-tag--live" };
   }
-  return { text: "PRÓXIMO", className: "scoreboard-tag scoreboard-tag--upcoming" };
+  return { text: "UPCOMING", className: "scoreboard-tag scoreboard-tag--upcoming" };
 }
 
 function formatScoreLine(match: ApiMatch): string {
@@ -51,7 +51,7 @@ export default function Scoreboard({ matchId }: Props) {
 
   const load = useCallback(async () => {
     if (!Number.isFinite(matchId) || matchId < 1) {
-      setError("Partido no válido");
+      setError("Invalid match");
       setLoading(false);
       return;
     }
@@ -60,7 +60,7 @@ export default function Scoreboard({ matchId }: Props) {
       setMatch(m);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error al cargar");
+      setError(e instanceof Error ? e.message : "Failed to load");
       setMatch(null);
     } finally {
       setLoading(false);
@@ -114,7 +114,7 @@ export default function Scoreboard({ matchId }: Props) {
   if (loading) {
     return (
       <div className="scoreboard scoreboard--loading">
-        <p className="scoreboard-empty-text">Cargando marcador…</p>
+        <p className="scoreboard-empty-text">Loading scoreboard…</p>
       </div>
     );
   }
@@ -122,14 +122,14 @@ export default function Scoreboard({ matchId }: Props) {
   if (error || !match) {
     return (
       <div className="scoreboard scoreboard--empty">
-        <p className="scoreboard-empty-text">{error || "Sin datos"}</p>
+        <p className="scoreboard-empty-text">{error || "No data"}</p>
       </div>
     );
   }
 
   const tag = formatTag(match.status);
-  const home = match.home_team ?? "Local";
-  const away = match.away_team ?? "Visitante";
+  const home = match.home_team ?? "Home";
+  const away = match.away_team ?? "Away";
   const { home: homeAbbr, away: awayAbbr } = parseAbbrsFromShortName(match.short_name);
 
   return (
@@ -138,7 +138,7 @@ export default function Scoreboard({ matchId }: Props) {
         <TeamLogo abbr={homeAbbr} teamName={home} side="home" />
         <div className="team-text">
           <h2>{home}</h2>
-          <span className="team-role">Local</span>
+          <span className="team-role">Home</span>
         </div>
       </div>
 
@@ -173,7 +173,7 @@ export default function Scoreboard({ matchId }: Props) {
       <div className="team team--away">
         <div className="team-text">
           <h2>{away}</h2>
-          <span className="team-role">Visitante</span>
+          <span className="team-role">Away</span>
         </div>
         <TeamLogo abbr={awayAbbr} teamName={away} side="away" />
       </div>

@@ -18,7 +18,7 @@ export function TwitterFeed() {
   return (
     <div className="twitter-feed">
         <div className="twitter-feed__header">
-            <h3>Utiliza el #TitansCrew en X para salir en el feed</h3>
+            <h3>Use #TitansCrew on X to show up in the feed</h3>
             <div className="twitter-feed__actions">
                 {!isActive? (
                     <button
@@ -33,7 +33,7 @@ export function TwitterFeed() {
                         fontWeight: 600,
                     }}
                     >
-                        Activar Feed
+                        Activate feed
                     </button>
                 ):(
 
@@ -50,7 +50,7 @@ export function TwitterFeed() {
                     fontWeight: 600,
                 }}
                 >
-                {loading ? 'Cargando...' : 'Actualizar'}
+                {loading ? "Loading..." : "Refresh"}
                 </button>
                 )}
             </div>
@@ -69,13 +69,13 @@ export function TwitterFeed() {
 
             {!isActive && !loading && tweets.length === 0 && (
                 <p style={{ textAlign: 'center', color: '#657786', padding: 32 }}>
-                    Presiona "Activar Feed" para ver los últimos tweets de #TitansCrew
+                    Tap &quot;Activate feed&quot; to load the latest #TitansCrew tweets
                 </p>
             )}
 
             {isActive && !loading && tweets.length === 0 && !error && (
                 <p style={{ textAlign: 'center', color: '#657786', padding: 32 }}>
-                    No se encontraron tweets recientes
+                    No recent tweets found
                 </p>
             )}
         </div>

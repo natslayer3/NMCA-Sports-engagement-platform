@@ -77,6 +77,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: "24px",
     marginBottom: "24px",
   },
   leftSection: {
@@ -86,6 +87,7 @@ const styles: Record<string, React.CSSProperties> = {
     flexWrap: "wrap",
     flex: 1,
     minWidth: 0,
+    overflow: "hidden",
   },
   brandGroup: {
     display: "flex",
