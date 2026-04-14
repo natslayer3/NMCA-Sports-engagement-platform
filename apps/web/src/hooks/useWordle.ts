@@ -1,8 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
+import { wordleGeneralWords } from "../data/wordleGeneralWords";
 import { wordleWords } from "../data/wordleWords";
 
 const MAX_ATTEMPTS = 6;
 const WORD_LENGTH = 5;
+const allowedGuessWords = new Set([...wordleGeneralWords, ...wordleWords]);
 
 export type WordleTileStatus = "empty" | "absent" | "present" | "correct";
 export type WordleGameStatus = "playing" | "won" | "lost";
@@ -113,7 +115,7 @@ export function useWordle() {
           return;
         }
 
-        if (!wordleWords.includes(currentGuess)) {
+        if (!allowedGuessWords.has(currentGuess)) {
           setMessage("Palabra no permitida en este prototipo");
           return;
         }
