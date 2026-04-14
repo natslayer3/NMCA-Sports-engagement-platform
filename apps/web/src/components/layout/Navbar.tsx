@@ -5,6 +5,7 @@ import { ModalComp } from "../general/modal";
 import { SignupForm } from "../auth/SignUpForm";
 import { SigninWithEmailForm } from "../auth/SignInForm";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
