@@ -2,7 +2,7 @@ import {
   RARITY_HEADSHOT_BACKDROP,
   RARITY_HEADSHOT_IMAGE_OPACITY,
 } from "./cardLayout";
-import { resolveHeadshotForRosterCard } from "../../utils/headshotUrl";
+import { useRosterHeadshotSrc } from "../../hooks/useRosterHeadshotSrc";
 import { positionAndJersey } from "../../utils/jerseyDisplay";
 import type { RosterCard } from "../../types";
 
@@ -11,29 +11,34 @@ interface LockedCardProps {
 }
 
 export default function LockedCard({ card }: LockedCardProps) {
-  const headshotSrc = resolveHeadshotForRosterCard(card);
+  const { src: headshotSrc, showPlaceholder, onImgError, attemptKey } = useRosterHeadshotSrc(card);
 
   return (
     <article className="relative mx-auto w-full max-w-sm">
       {/* Misma caja 3:4 que PlayerCard: retrato + barra dentro del aspect-ratio */}
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-[#0f1b2d] shadow-lg ring-2 ring-inset ring-gray-600">
         <div className="absolute inset-0 flex flex-col bg-gradient-to-b from-gray-800 to-gray-900">
-          <div className="relative min-h-0 flex-1 basis-0 overflow-hidden bg-[#0f1b2d]">
+          <div className="relative isolate min-h-0 flex-1 basis-0 overflow-hidden bg-[#0f1b2d]">
             <div
               className={`absolute inset-0 z-0 ${RARITY_HEADSHOT_BACKDROP[card.rarity]}`}
               aria-hidden
             />
-            {headshotSrc ? (
+            {headshotSrc && !showPlaceholder ? (
               <img
+                key={attemptKey}
                 src={headshotSrc}
                 alt={card.display_name}
-                referrerPolicy="no-referrer"
                 loading="eager"
                 decoding="async"
-                className={`absolute inset-0 z-[1] h-full w-full object-cover object-top brightness-[0.28] grayscale ${RARITY_HEADSHOT_IMAGE_OPACITY[card.rarity]}`}
+                onError={onImgError}
+                className={`absolute inset-0 z-[1] h-full w-full object-cover object-top [transform:translate3d(0,0,0.02px)] brightness-[0.28] grayscale ${RARITY_HEADSHOT_IMAGE_OPACITY[card.rarity]}`}
               />
             ) : (
-              <div className="absolute inset-0 z-[1] bg-black/25" aria-hidden />
+              <div className="absolute inset-0 z-[1] flex items-center justify-center bg-black/25" aria-hidden>
+                <span className="text-5xl font-bold text-white/20">
+                  {card.display_name.charAt(0)}
+                </span>
+              </div>
             )}
 
             <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center bg-black/40">

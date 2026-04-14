@@ -18,7 +18,7 @@ async function migrate() {
         debut_year INT,
         position VARCHAR(20),
         jersey_num INT,
-        headshot_url VARCHAR(255),
+        headshot_url TEXT,
         athlete_status BOOLEAN DEFAULT TRUE,
         statistics_id INT
       );
@@ -86,6 +86,12 @@ async function migrate() {
       CREATE UNIQUE INDEX IF NOT EXISTS pack_openings_one_active_per_user
       ON pack_openings (user_id)
       WHERE status = 'OPENING';
+    `);
+
+    // URLs de ESPN superan 255 caracteres; evita headshots truncados en DB
+    await pool.query(`
+      ALTER TABLE athletes
+      ALTER COLUMN headshot_url TYPE TEXT USING headshot_url::TEXT;
     `);
 
     // Table: sync log for ESPN data

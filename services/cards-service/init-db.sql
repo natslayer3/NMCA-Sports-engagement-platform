@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS athletes (
   debut_year INT,
   position VARCHAR(20),
   jersey_num INT,
-  headshot_url VARCHAR(255),
+        headshot_url TEXT,
   athlete_status BOOLEAN DEFAULT TRUE,
   statistics_id INT
 );

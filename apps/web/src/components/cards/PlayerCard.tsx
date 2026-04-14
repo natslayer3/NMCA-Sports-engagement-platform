@@ -1,10 +1,9 @@
-import { useState } from "react";
 import RarityBadge from "./RarityBadge";
 import {
   RARITY_HEADSHOT_BACKDROP,
   RARITY_HEADSHOT_IMAGE_OPACITY,
 } from "./cardLayout";
-import { resolveHeadshotForRosterCard } from "../../utils/headshotUrl";
+import { useRosterHeadshotSrc } from "../../hooks/useRosterHeadshotSrc";
 import { hasJerseyNumber, positionAndJersey } from "../../utils/jerseyDisplay";
 import type { RosterCard } from "../../types";
 
@@ -59,7 +58,7 @@ function StatBlock({
 }
 
 export default function PlayerCard({ card, onViewStats }: PlayerCardProps) {
-  const [imgError, setImgError] = useState(false);
+  const { src: headshotSrc, showPlaceholder, onImgError, attemptKey } = useRosterHeadshotSrc(card);
   const ageLabel =
     card.age != null && !Number.isNaN(Number(card.age)) ? String(card.age) : "—";
   const heightLabel =
@@ -72,7 +71,6 @@ export default function PlayerCard({ card, onViewStats }: PlayerCardProps) {
       : "—";
 
   const borderGlow = `${rarityBorder[card.rarity]} ${rarityGlow[card.rarity]}`;
-  const headshotSrc = resolveHeadshotForRosterCard(card);
 
   return (
     <article
@@ -98,20 +96,20 @@ export default function PlayerCard({ card, onViewStats }: PlayerCardProps) {
             </div>
           ) : null}
 
-          <div className="relative min-h-0 flex-1 basis-0 overflow-hidden">
+          <div className="relative isolate min-h-0 flex-1 basis-0 overflow-hidden">
             <div
               className={`absolute inset-0 z-0 ${RARITY_HEADSHOT_BACKDROP[card.rarity]}`}
               aria-hidden
             />
-            {headshotSrc && !imgError ? (
+            {headshotSrc && !showPlaceholder ? (
               <img
+                key={attemptKey}
                 src={headshotSrc}
                 alt={card.display_name}
-                referrerPolicy="no-referrer"
                 loading="eager"
                 decoding="async"
-                onError={() => setImgError(true)}
-                className={`absolute inset-0 z-[1] h-full w-full object-cover object-top ${RARITY_HEADSHOT_IMAGE_OPACITY[card.rarity]}`}
+                onError={onImgError}
+                className={`absolute inset-0 z-[1] h-full w-full object-cover object-top [transform:translate3d(0,0,0.02px)] ${RARITY_HEADSHOT_IMAGE_OPACITY[card.rarity]}`}
               />
             ) : (
               <div className="absolute inset-0 z-[1] flex items-center justify-center">

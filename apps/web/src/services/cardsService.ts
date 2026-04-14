@@ -1,5 +1,4 @@
 import { apiFetch } from "./api";
-import { resolveHeadshotFromRow } from "../utils/headshotUrl";
 import type {
   RosterCard,
   AthleteDetail,
@@ -11,18 +10,13 @@ import type {
 export async function getRoster(userId?: string): Promise<RosterCard[]> {
   const query = userId != null ? `?user_id=${userId}` : "";
   const rows = await apiFetch<Record<string, unknown>[]>(`/api/cards/roster${query}`);
-  return rows.map((row) => ({
-    ...(row as unknown as RosterCard),
-    headshot_url: resolveHeadshotFromRow(row),
-  }));
+  // headshot_url sin sobrescribir: el hook prueba DB + fallbacks ESPN; evita perder la href original de la API.
+  return rows.map((row) => ({ ...(row as unknown as RosterCard) }));
 }
 
 export async function getAthleteDetail(athleteId: number): Promise<AthleteDetail> {
   const row = await apiFetch<Record<string, unknown>>(`/api/cards/roster/${athleteId}`);
-  return {
-    ...(row as unknown as AthleteDetail),
-    headshot_url: resolveHeadshotFromRow(row),
-  };
+  return { ...(row as unknown as AthleteDetail) };
 }
 
 export async function getCollectionStats(userId: string): Promise<CollectionStats> {
