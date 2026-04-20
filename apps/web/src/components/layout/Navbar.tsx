@@ -18,7 +18,7 @@ function Navbar() {
       <div style={styles.leftSection}>
         <div style={styles.brandGroup}>
           <img
-            src="/team-logos/TitanCrew.svg"
+            src="apps/web/src/assets/logo/TitanCrew.svg" 
             alt="Titans Crew"
             width={72}
             height={72}
