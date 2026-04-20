@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [react(), tailwindcss()],
+    base: env.VITE_BASE_PATH || "/",
     server: {
       proxy: {
         "/api/cards": {
@@ -37,3 +38,5 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
+ 
